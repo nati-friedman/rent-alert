@@ -15,7 +15,7 @@ A lightweight, personal automation tool designed to monitor Facebook Groups for 
 - **MutationObserver API**: Used to detect new posts in Facebook's Single Page Application (SPA) environment.
 - **Chrome Extension API (Manifest V3)**: Utilizes `chrome.storage`, `chrome.runtime`, and `background service workers`.
 
-## 📂 Project Structure
+## Project Structure
 
 | File | Purpose |
 | :--- | :--- |
@@ -36,7 +36,7 @@ Since this is a personal tool, you must load it as an "Unpacked Extension":
 5. Select the folder containing the project files.
 6. (Optional) Pin the extension to your toolbar for easy access.
 
-## 📖 How to Use
+## How to Use
 
 1. Click the extension icon to open the popup.
 2. Add keywords you are looking for (e.g., "studio", "sublet", "lease transfer", "ohio").
