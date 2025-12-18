@@ -1,49 +1,38 @@
-// --- CONFIGURATION ---
-const KEYWORDS = ["בניה", "מושב", "השכרה"];
-const PROCESSED_POSTS = new Set(); // To avoid notifying twice for the same post
+// scan if posts contain keywords
+function scanPage() {
+  chrome.storage.local.get(['keywords'], (data) => {
+    const keywords = data.keywords || [];
+    const posts = document.querySelectorAll('div[role="article"]');
 
-function checkPost(postElement) {
-    // Facebook posts usually contain text inside specific spans or divs
-    // We get all text content and check for keywords
-    const text = postElement.innerText.toLowerCase();
+    posts.forEach(post => {
+      const text = post.innerText.toLowerCase();
+      keywords.forEach(word => {
+        if (text.includes(word.toLowerCase()) && !post.dataset.detected) {
+          post.dataset.detected = "true";
+          post.style.border = "2px solid red";
 
-    const foundKeyword = KEYWORDS.find(word => text.includes(word.toLowerCase()));
-
-    if (foundKeyword && !PROCESSED_POSTS.has(postElement)) {
-        PROCESSED_POSTS.add(postElement);
-
-        console.log(`%c [Found!] Keyword "${foundKeyword}" in post:`, "color: green; font-weight: bold;");
-
-        // Visual cue: Highlight the post
-        postElement.style.border = "5px solid #4267B2";
-        postElement.style.backgroundColor = "#f0f2f5";
-
-        // Alert the user
-        alert(`Match found for: ${foundKeyword}`);
-    }
+          // Save to history
+          saveMatch(word, post.innerText);
+        }
+      });
+    });
+  });
 }
 
-// Step 1: Initial scan of posts already on the page
-// TODO: check fb post selector
-function scanExistingPosts() {
-  const posts = document.querySelectorAll('div[role="article"] > div, div[data-ad-comet-preview="message"]');
-  posts.forEach(checkPost);
+function saveMatch(keyword, text) {
+  chrome.storage.local.get(['matches'], (data) => {
+    const matches = data.matches || [];
+    const newMatch = { keyword, text, time: new Date().toLocaleString() };
+    chrome.storage.local.set({ matches: [newMatch, ...matches].slice(0, 20) });
+
+    // Send message to background.js to trigger a desktop notification
+    chrome.runtime.sendMessage({
+      action: "matchFound",
+      keyword: keyword
+    });
+  });
 }
 
-// Step 2: Watch for new posts being added (MutationObserver)
-const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-        mutation.addedNodes.forEach(node => {
-            if (node.nodeType === 1) { // Check if it's an element
-                // Scan the added node or its children for posts
-                checkPost(node);
-            }
-        });
-    }
-});
-
-// Start observing the body for changes
+// Observe for new posts
+const observer = new MutationObserver(scanPage);
 observer.observe(document.body, { childList: true, subtree: true });
-
-// Run initial scan
-scanExistingPosts();
