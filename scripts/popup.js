@@ -1,35 +1,36 @@
-const input = document.getElementById('keywordInput');
-const addBtn = document.getElementById('addBtn');
-const kwList = document.getElementById('keywordList');
-const historyList = document.getElementById('matchHistory');
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('keywordInput');
+    const addBtn = document.getElementById('addBtn');
+    const kwList = document.getElementById('keywordList');
 
-// Load data on open
-chrome.storage.local.get(['keywords', 'matches'], (data) => {
-  displayKeywords(data.keywords || []);
-  displayMatches(data.matches || []);
-});
+    // 1. Load and display existing keywords when popup opens
+    function updateDisplay() {
+        chrome.storage.local.get(['keywords'], (data) => {
+            const list = data.keywords || [];
+            kwList.innerHTML = list.map(w => `<div class="kw-tag">${w}</div>`).join('');
+        });
+    }
 
-addBtn.onclick = () => {
-  const word = input.value.trim();
-  if (!word) return;
+    updateDisplay();
 
-  chrome.storage.local.get(['keywords'], (data) => {
-    const newList = [...(data.keywords || []), word];
-    chrome.storage.local.set({ keywords: newList }, () => {
-      displayKeywords(newList);
-      input.value = '';
+    // 2. Add button logic
+    addBtn.addEventListener('click', () => {
+        const word = input.value.trim();
+        if (!word) return;
+
+        chrome.storage.local.get(['keywords'], (data) => {
+            const currentKeywords = data.keywords || [];
+
+            // Check if keyword already exists to avoid duplicates
+            if (!currentKeywords.includes(word)) {
+                const newList = [...currentKeywords, word];
+
+                chrome.storage.local.set({ keywords: newList }, () => {
+                    console.log("Keyword saved:", word);
+                    input.value = ''; // Clear input
+                    updateDisplay();  // Refresh the list
+                });
+            }
+        });
     });
-  });
-};
-
-function displayKeywords(list) {
-  kwList.innerHTML = list.map(w => `<span>${w} </span>`).join('');
-}
-
-function displayMatches(matches) {
-  historyList.innerHTML = matches.map(m => `
-    <div class="match-item">
-      <strong>${m.keyword}</strong>: ${m.text.substring(0, 50)}...
-    </div>
-  `).join('');
-}
+});

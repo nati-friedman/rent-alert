@@ -1,11 +1,22 @@
 // scan if posts contain keywords
 function scanPage() {
+  // Check if the extension context is still valid
+  if (!chrome.runtime?.id) {
+    console.log("Extension context invalidated. Please refresh the page.");
+    observer.disconnect(); // Stop the observer if we are orphaned
+    return;
+  }
+
   chrome.storage.local.get(['keywords'], (data) => {
+    // This part only runs if the context is valid
+    if (chrome.runtime.lastError) return;
+
     const keywords = data.keywords || [];
     const posts = document.querySelectorAll('div[role="article"]');
 
     posts.forEach(post => {
-      const text = post.innerText.toLowerCase();
+      const textContent = post.querySelector('div[dir="auto"]')?.innerText || post.innerText;
+      const text = textContent.toLowerCase();
       keywords.forEach(word => {
         if (text.includes(word.toLowerCase()) && !post.dataset.detected) {
           post.dataset.detected = "true";
