@@ -49,19 +49,19 @@ document.addEventListener('DOMContentLoaded', function () {
           }
 
           // 1. Create CSV Header
-          let csvContent = "data:text/csv;charset=utf-8,Date,Keyword,Post Content\n";
+          let csvContent = "data:text/csv;charset=utf-8,Date,Keyword,Link,Post Content\n";
 
           // 2. Add Rows (Clean text to avoid breaking CSV format)
           matches.forEach(match => {
-              const cleanText = match.text.replace(/"/g, '""').replace(/\n/g, ' ');
-              csvContent += `"${match.time}","${match.keyword}","${cleanText}"\n`;
+            const cleanText = match.text.replace(/"/g, '""').replace(/\n/g, ' ');
+            csvContent += `"${match.time}","${match.keyword}","${match.url}","${cleanText}"\n`;
           });
 
           // 3. Trigger Download
           const encodedUri = encodeURI(csvContent);
           const link = document.createElement("a");
           link.setAttribute("href", encodedUri);
-          link.setAttribute("download", `fb_apartment_matches_${new Date().toLocaleDateString()}.csv`);
+          link.setAttribute("download", `rent_alert__matches_${new Date().toLocaleDateString()}.csv`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);

@@ -21,19 +21,26 @@ function scanPage() {
         if (text.includes(word.toLowerCase()) && !post.dataset.detected) {
           post.dataset.detected = "true";
           post.style.border = "2px solid red";
+          const linkElement = post.querySelector('a[href*="/groups/"], a[href*="/posts/"]');
+          const postUrl = linkElement ? (linkElement.href.split('?')[0]) : "URL not found";
 
           // Save to history
-          saveMatch(word, post.innerText);
+          saveMatch(word, textContent, postUrl);
         }
       });
     });
   });
 }
 
-function saveMatch(keyword, text) {
+function saveMatch(keyword, text, url) {
   chrome.storage.local.get(['matches'], (data) => {
     const matches = data.matches || [];
-    const newMatch = { keyword, text, time: new Date().toLocaleString() };
+    const newMatch = {
+      keyword,
+      text,
+      url,
+      time: new Date().toLocaleString()
+    };
     chrome.storage.local.set({ matches: [newMatch, ...matches].slice(0, 20) });
 
     // Send message to background.js to trigger a desktop notification
