@@ -1,4 +1,4 @@
-// scan if posts contain keywords
+// Scan if posts contain keywords
 function scanPage() {
   // Check if the extension context is still valid
   if (!chrome.runtime?.id) {
