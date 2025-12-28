@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Rent Alert",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Help you search for an apartment on facebook",
   "permissions": [
     "tabs",

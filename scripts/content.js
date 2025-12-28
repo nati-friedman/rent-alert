@@ -18,9 +18,9 @@ function scanPage() {
       const textContent = post.querySelector('div[dir="auto"]')?.innerText || post.innerText;
       const text = textContent.toLowerCase();
       keywords.forEach(word => {
-        if (text.includes(word.toLowerCase()) && !post.dataset.detected) {
+        if (text.includes("השכרה") && text.includes(word.toLowerCase()) && !post.dataset.detected) {
           post.dataset.detected = "true";
-          post.style.border = "2px solid red";
+          post.style.border = "2px solid green";
           const linkElement = post.querySelector('a[href*="/groups/"], a[href*="/posts/"]');
           const postUrl = linkElement ? (linkElement.href.split('?')[0]) : "URL not found";
 
