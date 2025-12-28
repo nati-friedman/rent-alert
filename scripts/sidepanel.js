@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const input = document.getElementById('keywordInput');
   const addBtn = document.getElementById('addBtn');
+  const resetBtn = document.getElementById('resetBtn');
   const kwList = document.getElementById('keywordList');
   const exportBtn = document.getElementById('exportBtn');
   const clearBtn = document.getElementById('clearBtn');
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Add buttons logic
   addBtn.addEventListener('click', addKeyword);
+  resetBtn.addEventListener('click', clearKeywords);
   exportBtn.addEventListener('click', exportToCSV);
   clearBtn.addEventListener('click', clearHistory);
 
@@ -38,6 +40,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       }
     })
+  };
+
+  function clearKeywords() {
+    chrome.storage.local.set({ keywords: [] }, () => {
+      updateDisplay();  // Refresh the list
+    });
   };
 
   function exportToCSV() {
