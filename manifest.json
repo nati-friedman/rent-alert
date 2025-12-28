@@ -3,7 +3,14 @@
   "name": "Rent Alert",
   "version": "1.0",
   "description": "Help you search for an apartment on facebook",
-  "permissions": ["tabs", "notifications", "storage", "activeTab", "scripting"],
+  "permissions": [
+    "tabs",
+    "notifications",
+    "storage",
+    "activeTab",
+    "scripting",
+    "sidePanel"
+  ],
   "background": {
     "service_worker": "scripts/background.js"
   },
@@ -14,8 +21,8 @@
     "64": "images/icon64.png",
     "128": "images/icon128.png"
   },
-  "action": {
-    "default_popup": "popup.html"
+  "side_panel": {
+    "default_path": "sidepanel.html"
   },
   "content_scripts": [
     {
