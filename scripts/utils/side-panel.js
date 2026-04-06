@@ -56,16 +56,16 @@ document.addEventListener('DOMContentLoaded', function () {
               return;
           }
 
-          // 1. Create CSV Header
+          // Create CSV Header
           let csvContent = "data:text/csv;charset=utf-8,Date,Keyword,Link,Post Content\n";
 
-          // 2. Add Rows (Clean text to avoid breaking CSV format)
+          // Add Rows
           matches.forEach(match => {
             const cleanText = match.text.replace(/"/g, '""').replace(/\n/g, ' ');
             csvContent += `"${match.time}","${match.keyword}","${match.url}","${cleanText}"\n`;
           });
 
-          // 3. Trigger Download
+          // Trigger Download
           const encodedUri = encodeURI(csvContent);
           const link = document.createElement("a");
           link.setAttribute("href", encodedUri);

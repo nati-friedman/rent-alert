@@ -1,0 +1,14 @@
+rent-alert/
+├── manifest.json
+├── src/
+│   ├── content/
+│   │   ├── scraper.js      (Only handles finding elements on Facebook)
+│   │   └── observer.js     (Handles the MutationObserver to detect new posts)
+│   ├── background/
+│   │   └── service_worker.js (Handles data storage and notifications)
+│   └── utils/
+│       └── storage.js      (Helper functions for saving/loading data)
+├── popup/
+│   ├── popup.html
+│   └── popup.js
+└── icons/

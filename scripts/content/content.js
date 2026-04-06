@@ -20,7 +20,7 @@ function scanPage() {
       keywords.forEach(word => {
         if (text.includes("השכרה") && text.includes(word.toLowerCase()) && !post.dataset.detected) {
           post.dataset.detected = "true";
-          post.style.border = "2px solid green";
+          post.style.border = "2px solid red";
           const linkElement = post.querySelector('a[href*="/groups/"], a[href*="/posts/"]');
           const postUrl = linkElement ? (linkElement.href.split('?')[0]) : "URL not found";
 
