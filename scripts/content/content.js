@@ -1,56 +1,26 @@
-// Scan if posts contain keywords
-function scanPage() {
-  // Check if the extension context is still valid
-  if (!chrome.runtime?.id) {
-    console.log("Extension context invalidated. Please refresh the page.");
-    observer.disconnect(); // Stop the observer if we are orphaned
-    return;
+// Observe new posts
+const observer = new MutationObserver((mutations) => {
+  for (const mutation of mutations) {
+    mutation.addedNodes.forEach(node => {
+      if (node.nodeType === Node.ELEMENT_NODE &&
+          node.getAttribute('role') === 'article') {
+        scrapePost(node)
+      }
+    })
   }
+});
 
-  chrome.storage.local.get(['keywords'], (data) => {
-    // This part only runs if the context is valid
-    if (chrome.runtime.lastError) return;
+// Send post data to a background worker
+const scrapePost = (element) => {
+  const data = {
+    id: element.getAttribute('id') || Date.now().toString(),
+    text: element.innerText.substring(0, 500),
+    timestamp: new Date().toISOString(),
+    url: window.location.href
+  };
 
-    const keywords = data.keywords || [];
-    const posts = document.querySelectorAll('div[role="article"]');
+  chrome.runtime.sendMessage({ type: "NEW_POST", payload: data });
+};
 
-    posts.forEach(post => {
-      const textContent = post.querySelector('div[dir="auto"]')?.innerText || post.innerText;
-      const text = textContent.toLowerCase();
-      keywords.forEach(word => {
-        if (text.includes("השכרה") && text.includes(word.toLowerCase()) && !post.dataset.detected) {
-          post.dataset.detected = "true";
-          post.style.border = "2px solid red";
-          const linkElement = post.querySelector('a[href*="/groups/"], a[href*="/posts/"]');
-          const postUrl = linkElement ? (linkElement.href.split('?')[0]) : "URL not found";
-
-          // Save to history
-          saveMatch(word, textContent, postUrl);
-        }
-      });
-    });
-  });
-}
-
-function saveMatch(keyword, text, url) {
-  chrome.storage.local.get(['matches'], (data) => {
-    const matches = data.matches || [];
-    const newMatch = {
-      keyword,
-      text,
-      url,
-      time: new Date().toLocaleString()
-    };
-    chrome.storage.local.set({ matches: [newMatch, ...matches].slice(0, 20) });
-
-    // Send message to background.js to trigger a desktop notification
-    chrome.runtime.sendMessage({
-      action: "matchFound",
-      keyword: keyword
-    });
-  });
-}
-
-// Observe for new posts
-const observer = new MutationObserver(scanPage);
+// Start the observer
 observer.observe(document.body, { childList: true, subtree: true });
