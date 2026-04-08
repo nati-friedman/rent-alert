@@ -48,7 +48,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
-  function exportToCSV() {
+  function clearHistory() {
+    if (confirm("Are you sure you want to delete all saved matches?")) {
+      chrome.storage.local.set({ matches: [] }, () => {
+        location.reload(); // Refresh popup to show empty list
+      });
+    }
+  }
+
+function exportToCSV() {
       chrome.storage.local.get(['matches'], (data) => {
           const matches = data.matches || [];
           if (matches.length === 0) {
@@ -56,16 +64,16 @@ document.addEventListener('DOMContentLoaded', function () {
               return;
           }
 
-          // Create CSV Header
+          // 1. Create CSV Header
           let csvContent = "data:text/csv;charset=utf-8,Date,Keyword,Link,Post Content\n";
 
-          // Add Rows
+          // 2. Add Rows (Clean text to avoid breaking CSV format)
           matches.forEach(match => {
             const cleanText = match.text.replace(/"/g, '""').replace(/\n/g, ' ');
             csvContent += `"${match.time}","${match.keyword}","${match.url}","${cleanText}"\n`;
           });
 
-          // Trigger Download
+          // 3. Trigger Download
           const encodedUri = encodeURI(csvContent);
           const link = document.createElement("a");
           link.setAttribute("href", encodedUri);
@@ -77,10 +85,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function clearHistory() {
-      if (confirm("Are you sure you want to delete all saved matches?")) {
-          chrome.storage.local.set({ matches: [] }, () => {
-              location.reload(); // Refresh popup to show empty list
-          });
-      }
+    if (confirm("Are you sure you want to delete all saved matches?")) {
+      chrome.storage.local.set({ matches: [] }, () => {
+        location.reload(); // Refresh popup to show empty list
+      });
+    }
   }
 });
+

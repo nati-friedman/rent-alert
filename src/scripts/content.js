@@ -13,7 +13,6 @@ const observer = new MutationObserver((mutations) => {
 // Send post data to a service worker
 const scrapePost = (element) => {
   const data = {
-    id: element.getAttribute('id') || Date.now().toString(),
     text: element.innerText.substring(0, 500),
     timestamp: new Date().toISOString(),
     url: window.location.href
