@@ -48,7 +48,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
-  function exportToCSV() {
+  function clearHistory() {
+    if (confirm("Are you sure you want to delete all saved matches?")) {
+      chrome.storage.local.set({ matches: [] }, () => {
+        location.reload(); // Refresh popup to show empty list
+      });
+    }
+  }
+
+function exportToCSV() {
       chrome.storage.local.get(['matches'], (data) => {
           const matches = data.matches || [];
           if (matches.length === 0) {
@@ -77,10 +85,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function clearHistory() {
-      if (confirm("Are you sure you want to delete all saved matches?")) {
-          chrome.storage.local.set({ matches: [] }, () => {
-              location.reload(); // Refresh popup to show empty list
-          });
-      }
+    if (confirm("Are you sure you want to delete all saved matches?")) {
+      chrome.storage.local.set({ matches: [] }, () => {
+        location.reload(); // Refresh popup to show empty list
+      });
+    }
   }
 });
+
