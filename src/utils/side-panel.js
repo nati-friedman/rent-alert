@@ -57,32 +57,32 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 function exportToCSV() {
-      chrome.storage.local.get(['matches'], (data) => {
-          const matches = data.matches || [];
-          if (matches.length === 0) {
-              alert("No matches to export yet!");
-              return;
-          }
+  chrome.storage.local.get(['matches'], (data) => {
+    const matches = data.matches || [];
+      if (matches.length === 0) {
+        alert("No matches to export yet!");
+        return;
+      }
 
-          // 1. Create CSV Header
-          let csvContent = "data:text/csv;charset=utf-8,Date,Keyword,Link,Post Content\n";
+      // 1. Create CSV Header
+      let csvContent = "data:text/csv;charset=utf-8,Date,Keyword,Link,Post Content\n";
 
-          // 2. Add Rows (Clean text to avoid breaking CSV format)
-          matches.forEach(match => {
-            const cleanText = match.text.replace(/"/g, '""').replace(/\n/g, ' ');
-            csvContent += `"${match.time}","${match.keyword}","${match.url}","${cleanText}"\n`;
-          });
-
-          // 3. Trigger Download
-          const encodedUri = encodeURI(csvContent);
-          const link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", `rent_alert__matches_${new Date().toLocaleDateString()}.csv`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+      // 2. Add Rows (Clean text to avoid breaking CSV format)
+      matches.forEach(match => {
+        const cleanText = match.text.replace(/"/g, '""').replace(/\n/g, ' ');
+        csvContent += `"${match.time}","${match.keyword}","${match.url}","${cleanText}"\n`;
       });
-  }
+
+      // 3. Trigger Download
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `rent_alert__matches_${new Date().toLocaleDateString()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  });
+}
 
   function clearHistory() {
     if (confirm("Are you sure you want to delete all saved matches?")) {

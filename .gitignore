@@ -11,3 +11,6 @@ Thumbs.db
 # --- Temporary Files ---
 *.log
 .env
+
+# --- Configuration Files ---
+config.js

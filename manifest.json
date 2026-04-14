@@ -12,7 +12,8 @@
     "sidePanel"
   ],
   "background": {
-    "service_worker": "src/scripts/background.js"
+    "service_worker": "src/scripts/background.js",
+    "type": "module"
   },
   "icons": {
     "16": "icons/icon16.png",
