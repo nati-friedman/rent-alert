@@ -1,52 +1,58 @@
 # Rent Alert (Chrome Extension)
 
-A lightweight, personal automation tool designed to monitor Facebook Groups for specific housing-related keywords. This extension helps users find apartment listings in real-time without the "endless scroll."
+Rent Alert helps you monitor Facebook Groups for apartment and rental posts using custom keywords, local match history, and Telegram alerts.
 
 ## Features
 
-- **Keyword Monitoring**: Scans Facebook Group posts dynamically as you scroll or as new content loads.
-- **Local Storage**: Saves all matched posts locally so you can review them later.
-- **CSV Export**: Export your lead list into an organized spreadsheet including the post date, keyword matched, and the direct URL to the post.
-- **Customizable**: Manage your keyword list through a simple popup interface.
+- **Keyword filtering**: Add and manage search terms in the side panel to detect relevant posts automatically.
+- **Facebook Group scanning**: The content script observes new posts in Facebook group feeds and sends candidates to the background service worker.
+- **Match storage**: All detected matches are stored in Chrome local storage so you can review them later.
+- **Export to CSV**: Download matched posts as a spreadsheet with date, keyword, URL, and post text.
+- **Clear history**: Reset saved matches directly from the side panel.
+- **Telegram notification support**: Automatically send a Telegram alert for each matching post when a keyword is detected.
 
 ## Technical Stack
 
-- **JavaScript (ES6)**: Core logic for DOM manipulation and storage.
-- **MutationObserver API**: Used to detect new posts in Facebook's Single Page Application (SPA) environment.
-- **Chrome Extension API (Manifest V3)**: Utilizes `chrome.storage`, `chrome.runtime`, and `background service workers`.
+- **JavaScript (ES6)**: Core logic for scraping, storage, and UI behavior.
+- **Chrome Extension Manifest V3**: Uses a module-based background service worker and content scripts.
+- **MutationObserver API**: Detects dynamically loaded Facebook posts in the group feed.
+- **Chrome Storage API**: Persists keywords and matched posts locally.
 
 ## Project Structure
 
 | File | Purpose |
 | :--- | :--- |
-| `manifest.json` | Extension configuration and permissions. |
-| `content.js` | The logic that runs on the Facebook page to scan posts. |
-| `background.js` | Service worker that handles system notifications. |
-| `popup.html/js` | The user interface for settings and history. |
-| `styles.css` | Visual styling for the popup and post highlighting. |
+| `manifest.json` | Extension manifest, permissions, and side panel entry point. |
+| `src/scripts/content.js` | Content script that scans Facebook group posts and sends matches to the service worker. |
+| `src/scripts/background.js` | Background module that filters matches, saves them, and sends Telegram alerts. |
+| `src/utils/side-panel.html` | Side panel UI for keyword management, exporting CSV, and clearing history. |
+| `src/utils/side-panel.js` | Behavior for the side panel interface. |
+| `src/styles/side-panel.css` | Styling for the side panel UI. |
+| `config.js` | Telegram bot configuration for alert delivery. |
 
 ## Installation
 
-Since this is a personal tool, you must load it as an "Unpacked Extension":
-
-1. Download or clone this repository to your local machine.
-2. Open Google Chrome and navigate to `chrome://extensions/`.
-3. Enable **Developer mode** (toggle switch in the top right corner).
-4. Click the **Load unpacked** button.
-5. Select the folder containing the project files.
-6. (Optional) Pin the extension to your toolbar for easy access.
+1. Clone or download the repository.
+2. Open Chrome and go to `chrome://extensions/`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked**.
+5. Select the `RentAlert` project folder.
+6. Use the extension icon or side panel button to open the settings panel.
 
 ## How to Use
 
-1. Click the extension icon to open the popup.
-2. Add keywords you are looking for (e.g., "studio", "sublet", "lease transfer", "ohio").
-3. Open any Facebook Group you are a member of.
-4. As you scroll, matching posts will be highlighted with a green border.
-5. Check the popup to see your history or export your leads to a `.csv` file.
+1. Open a Facebook Group feed at `https://www.facebook.com/groups/...`.
+2. Open the extension side panel via the toolbar action.
+3. Add keywords that describe the rental posts you want to catch.
+4. Save keywords and keep the Facebook group page open.
+5. The extension saves matches when a post contains both the Hebrew rental term `השכרה` and any active keyword.
+6. Export matches to CSV or clear stored history from the side panel.
 
-## Important Note
+## Notes and Limitations
 
-This tool is for **personal use only**. Facebook's HTML structure changes frequently. If the extension stops detecting posts, check if the selectors in `content.js` need updating to match Facebook's current DOM attributes.
+- The current implementation assumes Facebook group posts use `role="article"` markup and a link to `/groups/` or `/posts/`.
+- The background logic currently requires posts to contain the Hebrew word `השכרה` before applying keyword filters.
+- If detection stops working, the selectors in `src/scripts/content.js` may need adjustment.
+- Keep your Telegram bot credentials in `config.js` private.
 
 ---
-Created with ❤️ for the house hunting community.

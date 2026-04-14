@@ -19,9 +19,10 @@ async function handlePost(post) {
     chrome.storage.local.get(['keywords', 'matches'], (data) => {
       const keywords = data.keywords || []
       const matches = data.matches || []
+      const loweredText = post.text.toLowerCase()
 
-      keywords.forEach((word) => {
-        if (post.text.includes(word.toLowerCase())) {
+      for (const word of keywords) {
+        if (loweredText.includes(word.toLowerCase())) {
           console.log("match found");
 
           const newPost = { ...post, keyword: word }
@@ -29,9 +30,9 @@ async function handlePost(post) {
           console.log("match saved");
 
           sendTelegramAlert(newPost)
-          return;
+          break
         }
-      })
+      }
     })
   }
 }

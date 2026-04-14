@@ -51,14 +51,14 @@ document.addEventListener('DOMContentLoaded', function () {
   function clearHistory() {
     if (confirm("Are you sure you want to delete all saved matches?")) {
       chrome.storage.local.set({ matches: [] }, () => {
-        location.reload(); // Refresh popup to show empty list
+        location.reload(); // Refresh panel to show empty list
       });
     }
   }
 
-function exportToCSV() {
-  chrome.storage.local.get(['matches'], (data) => {
-    const matches = data.matches || [];
+  function exportToCSV() {
+    chrome.storage.local.get(['matches'], (data) => {
+      const matches = data.matches || [];
       if (matches.length === 0) {
         alert("No matches to export yet!");
         return;
@@ -70,7 +70,8 @@ function exportToCSV() {
       // 2. Add Rows (Clean text to avoid breaking CSV format)
       matches.forEach(match => {
         const cleanText = match.text.replace(/"/g, '""').replace(/\n/g, ' ');
-        csvContent += `"${match.time}","${match.keyword}","${match.url}","${cleanText}"\n`;
+        const date = match.timestamp ? new Date(match.timestamp).toLocaleString() : "";
+        csvContent += `"${date}","${match.keyword}","${match.url}","${cleanText}"\n`;
       });
 
       // 3. Trigger Download
@@ -81,15 +82,7 @@ function exportToCSV() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-  });
-}
-
-  function clearHistory() {
-    if (confirm("Are you sure you want to delete all saved matches?")) {
-      chrome.storage.local.set({ matches: [] }, () => {
-        location.reload(); // Refresh popup to show empty list
-      });
-    }
+    });
   }
 });
 
